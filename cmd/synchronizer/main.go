@@ -36,7 +36,7 @@ func main() {
 
 	token, err := c.vault.LoadToken()
 	if err != nil {
-		log.Println("Could not load the vault token with error", err)
+		log.Println("could not load the vault token with error", err)
 		if err := c.checkSecrets(); err != nil {
 			log.Fatal(err)
 		}
@@ -77,7 +77,7 @@ func newFromEnvironment() (*syncConfig, error) {
 		return nil, err
 	}
 	c.annotation = getEnv("SYNCHRONIZER_ANNOTATION", vaultAnnotation)
-	log.Println("Using annotation [", c.annotation, "] to detect managed secrets")
+	log.Printf("using annotation [%s] to detect managed secrets", c.annotation)
 	c.Secrets = make(map[string]string)
 	for _, item := range strings.Split(os.Getenv("VAULT_SECRETS"), ",") {
 		if len(item) == 0 {
@@ -126,7 +126,7 @@ func (sc *syncConfig) checkSecrets() error {
 		log.Println("checking k8s secret", k, "matching secret", v, "in vault")
 		_, err := sc.k8sClientset.CoreV1().Secrets(sc.Namespace).Get(k, metav1.GetOptions{})
 		if err != nil {
-			return fmt.Errorf("could not fetch secret %s from namespace %s: %s", k, sc.Namespace, err.Error())
+			return fmt.Errorf("could not fetch secret [%s] from namespace [%s]: reason [%s]", k, sc.Namespace, err.Error())
 		}
 	}
 	return nil
@@ -138,7 +138,7 @@ func (sc *syncConfig) synchronize() error {
 	annotations := make(map[string]string)
 	for k, v := range sc.Secrets {
 		// get secret from vault
-		log.Println("creating k8s secret [", k, "] from vault path [", v, "]")
+		log.Printf("creating k8s secret [%s] from vault path [%s]", k, v)
 		s, err := sc.secretClients[strings.SplitN(v, "/", 2)[0]].Read(v)
 		if err != nil {
 			return err
