@@ -122,7 +122,7 @@ func (sc *syncConfig) checkSecrets() error {
 			log.Printf("WARNING: cannot check existence of secrets from vault path %s without connection to vault\n", v)
 			continue
 		}
-		log.Println("check k8s secret", k, "from vault secret", v)
+		log.Println("checking k8s secret", k, "matching secret", v, "in vault")
 		_, err := sc.k8sClientset.CoreV1().Secrets(sc.Namespace).Get(k, metav1.GetOptions{})
 		if err != nil {
 			return fmt.Errorf("could not fetch secret %s from namespace %s: %s", k, sc.Namespace, err.Error())
@@ -137,7 +137,7 @@ func (sc *syncConfig) synchronize() error {
 	annotations := make(map[string]string)
 	for k, v := range sc.Secrets {
 		// get secret from vault
-		log.Println("read", v, "from vault")
+		log.Println("creating k8s secret [", k, "] from vault path [", v, "]")
 		s, err := sc.secretClients[strings.SplitN(v, "/", 2)[0]].Read(v)
 		if err != nil {
 			return err
