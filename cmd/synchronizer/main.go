@@ -83,7 +83,7 @@ func newFromEnvironment() (*syncConfig, error) {
 		if len(item) == 0 {
 			continue
 		}
-		s := strings.SplitN(item, ":", 2)
+		s := strings.SplitN(strings.TrimSpace(item), ":", 2)
 		switch {
 		case strings.HasSuffix(s[0], "/"):
 			c.Secrets[s[0]] = s[0]
