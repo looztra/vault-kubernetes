@@ -36,6 +36,7 @@ func main() {
 
 	token, err := c.vault.LoadToken()
 	if err != nil {
+		log.Println("Could not load the vault token with error", err)
 		if err := c.checkSecrets(); err != nil {
 			log.Fatal(err)
 		}
